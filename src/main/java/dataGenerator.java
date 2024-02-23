@@ -23,9 +23,9 @@ public class dataGenerator {
         createPeopleCSVs(sizePeople, sizeInfected, maxValueXY);
 
         //Change to 50,000 customers
-        int sizeCustomers = 10;
+        int sizeCustomers = 50000;
         //Change to 5,000,000 purchases
-        int sizePurchases = 30;
+        int sizePurchases = 5000000;
 
         createTransactionsCSVs(sizeCustomers, sizePurchases);
     }
