@@ -44,7 +44,7 @@ T1_df.show(n=100)
 result_df = spark.sql("""
 SELECT
     TransNumItems,
-    AVG(TransTotal) AS AvgTransTotal,
+    percentile_approx(TransTotal, 0.5) AS MedianTransTotal,
     MIN(TransTotal) AS MinTransTotal,
     MAX(TransTotal) AS MaxTransTotal
 FROM
