@@ -1,4 +1,5 @@
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types._
 
 object TaskA1 {
 
@@ -6,7 +7,18 @@ object TaskA1 {
 
     val spark = SparkSession.builder().master("local").appName("TaskA1")getOrCreate()
 
-    val df = spark.read.option("header",true).csv("src/main/data/transactions/purchases.csv")
+    // Define the schema for CSV file
+    val schema = StructType(
+      Array(
+        StructField("TransID", IntegerType, true),
+        StructField("CustID", IntegerType, true),
+        StructField("TransTotal", FloatType, true),
+        StructField("TransNumItems", IntegerType, true),
+        StructField("TransDesc", StringType, true)
+      )
+    )
+
+    val df = spark.read.option("header",true).schema(schema).csv("src/main/data/transactions/purchases.csv")
 
     df.createOrReplaceTempView("purchasesT")
 

@@ -1,5 +1,6 @@
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types._
 
 object TaskA2 {
 
@@ -7,7 +8,18 @@ object TaskA2 {
 
     val spark = SparkSession.builder().master("local").appName("TaskA2")getOrCreate()
 
-    val df = spark.read.option("header",true).csv("src/main/data/output/T1.csv")
+    // Define the schema for CSV file
+    val schema = StructType(
+      Array(
+        StructField("TransID", IntegerType, true),
+        StructField("CustID", IntegerType, true),
+        StructField("TransTotal", FloatType, true),
+        StructField("TransNumItems", IntegerType, true),
+        StructField("TransDesc", StringType, true)
+      )
+    )
+
+    val df = spark.read.option("header",true).schema(schema).csv("src/main/data/output/T1.csv")
 
 //    Calculate approx median => wrong answer when even number
     val t2 = df.groupBy("TransNumItems")
