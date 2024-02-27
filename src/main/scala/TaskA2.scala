@@ -9,39 +9,43 @@ object TaskA2 {
 
     val df = spark.read.option("header",true).csv("src/main/data/output/T1.csv")
 
-    //Calculate approx median => wrong answer when even number
-//    val t2 = df.groupBy("TransNumItems")
-//      .agg(
-//        expr("percentile_approx(TransTotal, 0.5)").alias("MedianTotal"),
-//        min("TransTotal").alias("MinTotal"),
-//        max("TransTotal").alias("MaxTotal")
-//      )
-
+//    Calculate approx median => wrong answer when even number
     val t2 = df.groupBy("TransNumItems")
       .agg(
-        min("TransTotal").alias("minTotal"),
-        max("TransTotal").alias("maxTotal")
+        expr("percentile_approx(TransTotal, 0.5)").alias("MedianTotal"),
+        min("TransTotal").alias("MinTotal"),
+        max("TransTotal").alias("MaxTotal")
       )
 
-    // Calculate the exact median
-    val median = df.groupBy("TransNumItems")
-      .agg(
-        expr("sort_array(collect_list(TransTotal))").alias("sortedTransTotal"),
-        size(collect_list("TransTotal")).alias("count")
-      )
-      .withColumn("median", when(col("count") % 2 === 0,
-        (col("sortedTransTotal")((col("count").cast("int") / 2 - 1).cast("int")) +
-          col("sortedTransTotal")((col("count").cast("int") / 2).cast("int"))) / 2.0
-      ).otherwise(
-        col("sortedTransTotal")((col("count") / 2).cast("int"))
-      ))
-      .drop("sortedTransTotal", "count")
+    t2.coalesce(1).write.option("header", true).csv("src/main/data/output/T2.csv")
 
-    // Combine t2 and median using a join
-    val combinedResult = t2.join(median, "TransNumItems")
+    t2.show()
 
-    combinedResult.coalesce(1).write.option("header",true).csv("src/main/data/output/T2.csv")
+//    val t2 = df.groupBy("TransNumItems")
+//      .agg(
+//        min("TransTotal").alias("minTotal"),
+//        max("TransTotal").alias("maxTotal")
+//      )
 
+//    // Calculate the exact median
+//    val median = df.groupBy("TransNumItems")
+//      .agg(
+//        expr("sort_array(collect_list(TransTotal))").alias("sortedTransTotal"),
+//        size(collect_list("TransTotal")).alias("count")
+//      )
+//      .withColumn("median", when(col("count") % 2 === 0,
+//        (col("sortedTransTotal")((col("count").cast("int") / 2 - 1).cast("int")) +
+//          col("sortedTransTotal")((col("count").cast("int") / 2).cast("int"))) / 2.0
+//      ).otherwise(
+//        col("sortedTransTotal")((col("count") / 2).cast("int"))
+//      ))
+//      .drop("sortedTransTotal", "count")
+//
+//    // Combine t2 and median using a join
+//    val combinedResult = t2.join(median, "TransNumItems")
+
+//    combinedResult.coalesce(1).write.option("header",true).csv("src/main/data/output/T2.csv")
+//
 //    combinedResult.show()
 
     spark.stop()
