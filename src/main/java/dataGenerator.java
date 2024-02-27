@@ -15,18 +15,18 @@ public class dataGenerator {
 
     public static void main(String[] args) throws Exception{
 
-        //Change to 5,000,000 people
-        int sizePeople = 10;
-        int sizeInfected = 2;
+        //Change to 500,000 people
+        int sizePeople = 500000;
+        int sizeInfected = 100;
         //Change to 10000
-        int maxValueXY = 20;
+        int maxValueXY = 10000;
 
         createPeopleCSVs(sizePeople, sizeInfected, maxValueXY);
 
         //Change to 50,000 customers
-        int sizeCustomers = 10;
+        int sizeCustomers = 10000;
         //Change to 5,000,000 purchases
-        int sizePurchases = 30;
+        int sizePurchases = 1000000;
 
         createTransactionsCSVs(sizeCustomers, sizePurchases);
     }
